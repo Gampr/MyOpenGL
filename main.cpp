@@ -1,13 +1,30 @@
 #include "tgaimage.h"
 
+#include <cmath>
+#include <algorithm>
+
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
 
 void line(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor color) {
+    bool rot = false;
+    if (std::abs(y1 - y0) < std::abs(x1 - x0)) {
+        std::swap(y0, x0);
+        std::swap(y1, x1);
+        rot = true;
+    }
+    if (y0 > y1) {
+        std::swap(y0, y1);
+        std::swap(x0, x1);
+    }
     for (int y = y0; y <= y1; y++) {
         float t = (y - y0)*1./(y1 - y0);
         int x = x0*(1.-t) + x1*t;
-        image.set(x, y, color);
+        if (rot) {
+            image.set(y, x, color);
+        } else {
+            image.set(x, y, color);
+        } 
     }
 }
 
